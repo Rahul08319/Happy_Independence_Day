@@ -142,7 +142,12 @@
   @keyframes floaty {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-12px); }
-  }
+}
+
+@media print {
+  body { background: white !important; }
+  .bg-gradient-hero { background: white !important; }
+}
 
   .glow-pulse {
     animation: glowpulse 2.5s ease-in-out infinite;
