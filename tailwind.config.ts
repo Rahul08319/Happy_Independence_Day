@@ -57,6 +57,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        saffron: "hsl(var(--saffron))",
+        "india-green": "hsl(var(--india-green))",
+        "ashoka-blue": "hsl(var(--ashoka-blue))",
       },
       borderRadius: {
         lg: "var(--radius)",
