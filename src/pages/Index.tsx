@@ -3,7 +3,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { toPng } from "html-to-image";
-import { Volume2, VolumeX, Download, Share2, Copy, RotateCcw, Printer } from "lucide-react";
+import confetti from "canvas-confetti";
+import { QRCodeSVG } from "qrcode.react";
+import {
+  Volume2,
+  VolumeX,
+  Download,
+  Share2,
+  Copy,
+  RotateCcw,
+  Printer,
+  Smartphone,
+  FileText,
+  Square as SquareIcon,
+  MessageCircle,
+} from "lucide-react";
+import {
+  POSTER_SIZES,
+  PosterSize,
+  sanitizeName,
+  sanitizeWish,
+  loadRecentWishes,
+  saveRecentWish,
+  removeRecentWish,
+  RecentWish,
+} from "@/lib/wishUtils";
+import { RecentWishes } from "@/components/RecentWishes";
 
 const TARGET_DATE = new Date("2026-08-15T00:00:00+05:30").getTime();
 
@@ -54,27 +79,56 @@ const Stat = ({ value, label }: { value: number; label: string }) => (
   </div>
 );
 
+const fireConfetti = () => {
+  const colors = ["#FF9933", "#FFFFFF", "#138808", "#000080"];
+  const end = Date.now() + 1200;
+  const frame = () => {
+    confetti({
+      particleCount: 4,
+      angle: 60,
+      spread: 70,
+      origin: { x: 0, y: 0.7 },
+      colors,
+    });
+    confetti({
+      particleCount: 4,
+      angle: 120,
+      spread: 70,
+      origin: { x: 1, y: 0.7 },
+      colors,
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  };
+  frame();
+  confetti({ particleCount: 120, spread: 90, origin: { y: 0.5 }, colors });
+};
+
 const Index = () => {
   const [name, setName] = useState("");
   const [message, setMessage] = useState(DEFAULT_MESSAGE);
   const [submitted, setSubmitted] = useState<{ name: string; message: string } | null>(null);
+  const [posterSize, setPosterSize] = useState<PosterSize>("phone");
+  const [recent, setRecent] = useState<RecentWish[]>([]);
   const { days, hours, minutes, seconds } = useCountdown();
   const cardRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [muted, setMuted] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
 
-  // Decode shared link
+  // Decode shared link + load recents
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const bl = params.get("bl");
     const msg = params.get("msg");
     if (bl) {
-      setSubmitted({
-        name: decodeURIComponent(bl.replace(/-/g, " ")),
-        message: msg ? decodeURIComponent(msg) : DEFAULT_MESSAGE,
-      });
+      const n = sanitizeName(decodeURIComponent(bl.replace(/-/g, " ")));
+      const m = msg ? sanitizeWish(decodeURIComponent(msg)) : DEFAULT_MESSAGE;
+      if (n) {
+        setSubmitted({ name: n, message: m || DEFAULT_MESSAGE });
+        setTimeout(fireConfetti, 300);
+      }
     }
+    setRecent(loadRecentWishes());
   }, []);
 
   // Start music only after first interaction
@@ -110,13 +164,28 @@ const Index = () => {
 
   const handleGenerate = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = name.trim();
-    if (!trimmed) {
-      toast.error("Please type your name first");
+    const cleanName = sanitizeName(name);
+    const cleanMsg = sanitizeWish(message) || DEFAULT_MESSAGE;
+    if (!cleanName) {
+      toast.error("Please type a valid name");
       return;
     }
-    setSubmitted({ name: trimmed, message: message.trim() || DEFAULT_MESSAGE });
+    setSubmitted({ name: cleanName, message: cleanMsg });
+    setRecent(saveRecentWish({ name: cleanName, message: cleanMsg }));
+    fireConfetti();
     setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+  };
+
+  const reopenRecent = (w: RecentWish) => {
+    setSubmitted({ name: w.name, message: w.message });
+    setName(w.name);
+    setMessage(w.message);
+    fireConfetti();
+    setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+  };
+
+  const handleRemoveRecent = (id: string) => {
+    setRecent(removeRecentWish(id));
   };
 
   const shareUrl = useMemo(() => {
@@ -129,9 +198,13 @@ const Index = () => {
     return `${base}?${params.toString()}`;
   }, [submitted]);
 
+  const shareText = useMemo(() => {
+    if (!submitted) return "";
+    return `*${submitted.name}* has sent you a special Independence Day 2026 wish 🇮🇳\nClick the link to view 👉 ${shareUrl}`;
+  }, [submitted, shareUrl]);
+
   const handleWhatsApp = () => {
-    const text = `*${submitted?.name}* has sent you a special Independence Day 2026 wish 🇮🇳\nClick the link to view 👉 ${shareUrl}`;
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank");
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
   };
 
   const handleNativeShare = async () => {
@@ -161,18 +234,23 @@ const Index = () => {
 
   const handleDownloadPng = async () => {
     if (!cardRef.current) return;
+    const cfg = POSTER_SIZES[posterSize];
     try {
       toast.loading("Generating image...", { id: "dl" });
-      const dataUrl = await toPng(cardRef.current, {
-        pixelRatio: 2,
+      const node = cardRef.current;
+      const rect = node.getBoundingClientRect();
+      // Compute pixel ratio to target the selected poster height
+      const pixelRatio = Math.max(1.5, cfg.height / rect.height);
+      const dataUrl = await toPng(node, {
+        pixelRatio,
         cacheBust: true,
         backgroundColor: "#ffffff",
       });
       const link = document.createElement("a");
-      link.download = `independence-wish-${submitted?.name.replace(/\s+/g, "-")}.png`;
+      link.download = `independence-wish-${posterSize}-${submitted?.name.replace(/\s+/g, "-")}.png`;
       link.href = dataUrl;
       link.click();
-      toast.success("Downloaded!", { id: "dl" });
+      toast.success(`Downloaded ${cfg.label}!`, { id: "dl" });
     } catch (err) {
       console.error(err);
       toast.error("Failed to download", { id: "dl" });
@@ -180,6 +258,11 @@ const Index = () => {
   };
 
   const handlePrint = () => window.print();
+
+  const sizeIcon = (s: PosterSize) =>
+    s === "phone" ? <Smartphone className="h-4 w-4" /> : s === "a4" ? <FileText className="h-4 w-4" /> : <SquareIcon className="h-4 w-4" />;
+
+  const cardAspect = POSTER_SIZES[posterSize].aspect;
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-hero">
@@ -283,20 +366,39 @@ const Index = () => {
             </form>
           ) : (
             <div className="mx-auto max-w-2xl space-y-6">
+              {/* Poster size selector */}
+              <div className="flex flex-wrap items-center justify-center gap-2 print:hidden">
+                <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground mr-1">Poster:</span>
+                {(Object.keys(POSTER_SIZES) as PosterSize[]).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setPosterSize(s)}
+                    className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-semibold border transition-all ${
+                      posterSize === s
+                        ? "bg-primary text-primary-foreground border-primary shadow-card"
+                        : "bg-card border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {sizeIcon(s)} {POSTER_SIZES[s].label}
+                  </button>
+                ))}
+              </div>
+
               {/* Card */}
               <div
                 ref={cardRef}
-                className="rounded-3xl bg-card border border-border shadow-elegant overflow-hidden print:shadow-none print:border-0"
+                style={{ aspectRatio: cardAspect }}
+                className="mx-auto w-full rounded-3xl bg-card border border-border shadow-elegant overflow-hidden print:shadow-none print:border-0 flex flex-col animate-scale-in"
               >
-                <div className="h-3 bg-saffron" />
-                <div className="h-3 bg-white flex items-center justify-center">
+                <div className="h-3 bg-saffron shrink-0" />
+                <div className="h-3 bg-white flex items-center justify-center shrink-0">
                   <div className="h-2 w-2 rounded-full border border-ashoka-blue" />
                 </div>
-                <div className="h-3 bg-india-green" />
+                <div className="h-3 bg-india-green shrink-0" />
 
-                <div className="p-8 md:p-14 text-center">
-                  <div className="flex justify-center mb-6">
-                    <AshokaChakra size={90} />
+                <div className="flex-1 p-6 md:p-10 text-center flex flex-col items-center justify-center min-h-0">
+                  <div className="mb-4 md:mb-6">
+                    <AshokaChakra size={posterSize === "square" ? 72 : 90} />
                   </div>
                   <p className="text-xs md:text-sm uppercase tracking-[0.3em] text-accent font-semibold">
                     A wish from
@@ -304,20 +406,48 @@ const Index = () => {
                   <h2 className="mt-3 font-['Playfair_Display'] italic text-3xl sm:text-4xl md:text-5xl font-extrabold text-gradient-tricolor leading-tight">
                     {submitted.name}
                   </h2>
-                  <p className="mt-7 text-base md:text-lg text-foreground leading-relaxed max-w-lg mx-auto whitespace-pre-line">
+                  <p className="mt-5 md:mt-7 text-sm md:text-lg text-foreground leading-relaxed max-w-lg mx-auto whitespace-pre-line">
                     {submitted.message}
                   </p>
-                  <p className="mt-8 text-2xl md:text-3xl font-bold text-secondary font-['Playfair_Display'] italic">
+                  <p className="mt-6 md:mt-8 text-xl md:text-3xl font-bold text-secondary font-['Playfair_Display'] italic">
                     जय हिन्द · Jai Hind 🇮🇳
                   </p>
-                  <p className="mt-2 text-xs md:text-sm text-muted-foreground tracking-wider">
+                  <p className="mt-2 text-[10px] md:text-sm text-muted-foreground tracking-wider">
                     Happy 79th Independence Day — 15 August 2026
                   </p>
+
+                  {/* QR code inside card so it's exported with the PNG */}
+                  <div className="mt-5 md:mt-7 flex flex-col items-center gap-1.5">
+                    <div className="p-2 bg-white rounded-lg border border-border">
+                      <QRCodeSVG
+                        value={shareUrl || window.location.href}
+                        size={posterSize === "square" ? 72 : 90}
+                        level="M"
+                        bgColor="#ffffff"
+                        fgColor="#000080"
+                      />
+                    </div>
+                    <p className="text-[10px] md:text-xs text-muted-foreground tracking-wider">Scan to open this wish</p>
+                  </div>
                 </div>
 
-                <div className="h-3 bg-india-green" />
-                <div className="h-3 bg-white" />
-                <div className="h-3 bg-saffron" />
+                <div className="h-3 bg-india-green shrink-0" />
+                <div className="h-3 bg-white shrink-0" />
+                <div className="h-3 bg-saffron shrink-0" />
+              </div>
+
+              {/* Share preview */}
+              <div className="rounded-2xl bg-card/80 backdrop-blur border border-border shadow-card p-4 md:p-5 print:hidden animate-fade-in">
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageCircle className="h-4 w-4 text-[#25D366]" />
+                  <h4 className="text-sm font-semibold text-foreground">Share preview</h4>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  This is the text people will see on WhatsApp / Share sheet.
+                </p>
+                <pre className="text-xs md:text-sm whitespace-pre-wrap break-words rounded-lg bg-muted/60 border border-border p-3 text-foreground font-sans">
+                  {shareText}
+                </pre>
               </div>
 
               {/* Actions */}
@@ -354,6 +484,9 @@ const Index = () => {
             </div>
           )}
         </section>
+
+        {/* Recent wishes */}
+        <RecentWishes wishes={recent} onOpen={reopenRecent} onRemove={handleRemoveRecent} />
 
         {/* Footer */}
         <footer className="mt-20 text-center text-sm text-muted-foreground fade-up print:hidden" style={{ animationDelay: "0.45s" }}>
