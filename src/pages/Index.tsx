@@ -30,7 +30,17 @@ import {
 } from "@/lib/wishUtils";
 import { RecentWishes } from "@/components/RecentWishes";
 
-const TARGET_DATE = new Date("2026-08-15T00:00:00+05:30").getTime();
+// Automatically target the upcoming Independence Day (15 Aug, IST).
+// Once Aug 15 has passed for the year, the site rolls over to next year.
+const getUpcomingYear = () => {
+  const now = Date.now();
+  const thisYear = new Date().getFullYear();
+  const aug15 = new Date(`${thisYear}-08-15T00:00:00+05:30`).getTime();
+  return now > aug15 + 86400000 ? thisYear + 1 : thisYear;
+};
+const TARGET_YEAR = getUpcomingYear();
+const EDITION = TARGET_YEAR - 1947; // 1947 = 1st Independence Day year offset (79th in 2026)
+const TARGET_DATE = new Date(`${TARGET_YEAR}-08-15T00:00:00+05:30`).getTime();
 
 const DEFAULT_MESSAGE =
   "Independence Day is an occasion to celebrate, and to remember the struggles of those who fought to give us this gift. Wishing you and your family a joyful, proud, and prosperous Independence Day.";
@@ -200,7 +210,7 @@ const Index = () => {
 
   const shareText = useMemo(() => {
     if (!submitted) return "";
-    return `*${submitted.name}* has sent you a special Independence Day 2026 wish 🇮🇳\nClick the link to view 👉 ${shareUrl}`;
+    return `*${submitted.name}* has sent you a special Independence Day ${TARGET_YEAR} wish 🇮🇳\nClick the link to view 👉 ${shareUrl}`;
   }, [submitted, shareUrl]);
 
   const handleWhatsApp = () => {
@@ -211,7 +221,7 @@ const Index = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Happy Independence Day 2026",
+          title: `Happy Independence Day ${TARGET_YEAR}`,
           text: `${submitted?.name} has sent you a special Independence Day wish 🇮🇳`,
           url: shareUrl,
         });
@@ -296,7 +306,7 @@ const Index = () => {
             <AshokaChakra size={72} />
           </div>
           <p className="text-xs md:text-sm uppercase tracking-[0.35em] text-accent font-semibold">
-            15 August 2026 · 79th Independence Day
+            15 August {TARGET_YEAR} · {EDITION}th Independence Day
           </p>
           <h1 className="mt-4 font-['Playfair_Display'] italic text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold leading-[1.05] text-gradient-tricolor glow-pulse">
             Happy Independence Day
@@ -309,7 +319,7 @@ const Index = () => {
         {/* Countdown */}
         <section className="mt-12 md:mt-16 fade-up print:hidden" style={{ animationDelay: "0.15s" }}>
           <p className="text-center text-[11px] md:text-xs uppercase tracking-[0.3em] text-muted-foreground mb-5">
-            Countdown to 15 August 2026
+            Countdown to 15 August {TARGET_YEAR}
           </p>
           <div className="flex items-center justify-center gap-2 md:gap-5">
             <Stat value={days} label="Days" />
@@ -413,7 +423,7 @@ const Index = () => {
                     जय हिन्द · Jai Hind 🇮🇳
                   </p>
                   <p className="mt-2 text-[10px] md:text-sm text-muted-foreground tracking-wider">
-                    Happy 79th Independence Day — 15 August 2026
+                    Happy {EDITION}th Independence Day — 15 August {TARGET_YEAR}
                   </p>
 
                   {/* QR code inside card so it's exported with the PNG */}
