@@ -94,6 +94,16 @@
       <p>Interactive cultural accordion detailing the profound history, symbolism, and virtues of the <b>Tiranga</b>, <b>Ashoka Chakra</b>, <b>Lion Capital</b>, and national anthems.</p>
     </td>
   </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🌸 Pushpa Vrishti & Flag Hoisting</h3>
+      <p>Interactive <b>Flag Hoisting (ध्वजारोहण)</b> ceremony with golden mast, unfurling Tiranga, trumpet fanfare audio, and 3D fluttering Marigold & Rose petal showers.</p>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🍏 Apple-Grade Fluid Motion Suite</h3>
+      <p>Interactive <b>Cursor Spotlight</b>, <b>3D CardTilt</b> with specular sheen, <b>Magnetic Buttons</b> with spring physics, <b>Rolling Odometer Digits</b>, and rotating <b>Aurora Glow Borders</b>.</p>
+    </td>
+  </tr>
 </table>
 
 ---
