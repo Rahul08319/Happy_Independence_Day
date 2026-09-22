@@ -1,9 +1,9 @@
 <div align="center">
 
-# 🇮🇳 Code Lookalike — Independence Day Wish Studio
+# 🇮🇳 Happy Independence Day
 
 <p align="center">
-  <strong>A Luxury Patriotic Greeting Card Generator & Live Celebration Studio for India's 79th Independence Day</strong>
+  <strong>A Luxury Patriotic Greeting Card Generator & Live Celebration Studio for India's Independence Day</strong>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Rahul08319/code-lookalike/main/public/og-image.jpg" alt="Independence Day Card Banner" width="820" style="border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(255, 103, 31, 0.25);" />
+  <img src="https://raw.githubusercontent.com/Rahul08319/code-lookalike/main/public/og-image.jpg" alt="Happy Independence Day Banner" width="820" style="border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(255, 103, 31, 0.25);" />
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 > *"Freedom is not merely a political status, but a celebration of spirit, unity, and heritage."*
 
-**Code Lookalike** elevates traditional viral festive scripts into a **designer-grade web experience**. Built from the ground up with **React 18**, **TypeScript**, and **Tailwind CSS**, it features an interactive greeting card generator where anyone can personalize luxury patriotic greetings with memorable quotes from India's greatest freedom fighters, listen to an instrumental rendition of *Vande Mataram* with live visualizer bars, watch the live countdown clock to August 15th, and export print-ready high-DPI posters or instant WhatsApp links.
+**Happy Independence Day** elevates traditional festive greetings into an **Apple-grade, designer web experience**. Built from the ground up with **React 18**, **TypeScript**, and **Tailwind CSS**, it features an interactive greeting card generator where anyone can personalize luxury patriotic greetings with memorable quotes from India's greatest freedom fighters, listen to an instrumental rendition of *Vande Mataram* with live visualizer bars, watch the live countdown clock to August 15th with rolling Apple Watch odometer digits, participate in an interactive flag hoisting ceremony with flower showers, and export print-ready high-DPI posters or instant WhatsApp links.
 
 ---
 
@@ -51,7 +51,7 @@
     </td>
     <td width="50%" valign="top">
       <h3>⚡ Real-Time Card Studio</h3>
-      <p>Watch your card update instantly as you type your name, select themes, or choose from inspiring patriotic quotes.</p>
+      <p>Watch your card update instantly as you type your name, select themes, or choose from inspiring patriotic quotes with interactive 3D perspective tilt.</p>
     </td>
   </tr>
   <tr>
@@ -71,7 +71,7 @@
     </td>
     <td width="50%" valign="top">
       <h3>⏱️ Live Neumorphic Countdown</h3>
-      <p>Frosted-glass countdown clock calculating days, hours, minutes, and seconds until 15 August with automatic year rollover.</p>
+      <p>Frosted-glass countdown clock calculating days, hours, minutes, and seconds until 15 August with Apple Watch rolling odometer digits and automatic year rollover.</p>
     </td>
   </tr>
   <tr>
@@ -166,10 +166,11 @@ Follow these steps to run the studio locally on your computer:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Rahul08319/code-lookalike.git
+git clone https://github.com/Rahul08319/happy-independence-day.git
+# (or if using the original repo url: git clone https://github.com/Rahul08319/code-lookalike.git)
 
 # 2. Enter directory
-cd code-lookalike
+cd happy-independence-day
 
 # 3. Install dependencies
 npm install
@@ -201,9 +202,11 @@ Open [http://localhost:5173](http://localhost:5173) in your browser to view the 
 - **[Tailwind CSS 3](https://tailwindcss.com/)**: Utility-first styling with custom glassmorphism and keyframe animations.
 - **[Radix UI / Shadcn](https://ui.shadcn.com/)**: Accessible, unstyled primitives for UI components.
 
-### Graphics, Sound & Export
+### Graphics, Sound & Motion
 - **[html-to-image](https://github.com/bubkoo/html-to-image)**: High-DPI canvas rasterization for PNG downloads without blur.
 - **[canvas-confetti](https://www.kirilv.com/canvas-confetti/)**: Multi-stage tricolor particle celebration effects.
+- **[Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)**: Native synthesizer for haptic taps, victory chimes, fanfare, and acoustic chakra harmonics.
+- **[Canvas 2D Particle Engine](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)**: Real-time 3D fluttering Marigold & Rose petals (Pushpa Vrishti) and ambient particles.
 - **[qrcode.react](https://github.com/zpao/qrcode.react)**: Inline vector SVG QR code generator with scannable contrast.
 - **[Lucide React](https://lucide.dev/)**: Lightweight, clean iconography.
 - **[Sonner](https://sonner.emilkowal.ski/)**: Toast notification library.
@@ -218,7 +221,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser to view the 
 ## 📁 Project Structure
 
 ```text
-code-lookalike/
+happy-independence-day/
 ├── public/
 │   ├── favicon.ico              # Tricolor favicon
 │   ├── og-image.jpg             # High-res OpenGraph preview
@@ -226,17 +229,27 @@ code-lookalike/
 ├── src/
 │   ├── components/
 │   │   ├── ui/                  # Shadcn UI primitives (button, input, etc.)
+│   │   ├── AnimatedNumber.tsx   # Apple Watch rolling digit odometer
 │   │   ├── AudioDock.tsx        # Floating music widget with visualizer
+│   │   ├── CardTilt.tsx         # 3D perspective card tilt with specular sheen
+│   │   ├── CursorSpotlight.tsx  # Ambient cursor torch light
+│   │   ├── FlagHoistModal.tsx   # Interactive Flag Hoisting ceremony
+│   │   ├── FlowerShower.tsx     # 3D fluttering flower petal shower (Pushpa Vrishti)
+│   │   ├── MagneticButton.tsx   # Apple spring-physics magnetic buttons
+│   │   ├── NationalSymbols.tsx  # Interactive heritage accordion
+│   │   ├── ParticleCanvas.tsx   # Ambient tricolor floating particle canvas
 │   │   ├── RecentWishes.tsx     # Wall of saved wishes gallery
+│   │   ├── SegmentedControl.tsx # Frosted glass segmented picker
 │   │   └── ThemeToggle.tsx      # Dark / Light theme switcher
 │   ├── lib/
-│   │   └── wishUtils.ts         # Theme presets, quotes, sanitizers & storage
+│   │   ├── soundEffects.ts      # Web Audio API sound synthesis engine
+│   │   └── wishUtils.ts         # Theme presets, quotes, sanitizers & multi-year engine
 │   ├── pages/
 │   │   ├── Index.tsx            # Main hero, studio, card renderer & countdown
 │   │   └── NotFound.tsx         # 404 fallback page
 │   ├── test/
 │   │   ├── example.test.ts      # Base smoke tests
-│   │   └── wishUtils.test.ts    # Unit tests for sanitizers & themes
+│   │   └── wishUtils.test.ts    # Unit tests for sanitizers & multi-year engine
 │   ├── App.tsx                  # App routes and providers
 │   ├── index.css                # Custom glassmorphism, animations & color tokens
 │   └── main.tsx                 # React DOM mount point
