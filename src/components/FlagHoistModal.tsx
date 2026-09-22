@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { X, Sparkles, Flag, Volume2 } from "lucide-react";
 import { sounds } from "@/lib/soundEffects";
-import { triggerFlowerShower } from "./FlowerShower";
+import { triggerFlowerShower } from "./RealisticPetalCanvas";
+import { RealisticFlag } from "./RealisticFlag";
 import confetti from "canvas-confetti";
 
 interface FlagHoistModalProps {
@@ -124,23 +125,18 @@ export const FlagHoistModal = ({
                     <span className="text-[10px] font-bold text-saffron">Hoisting...</span>
                   </div>
                 ) : (
-                  /* Unfurled magnificent 3D waving Tiranga flag */
-                  <div className="relative flag-wave origin-left shadow-2xl flex flex-col w-36 sm:w-44 rounded-sm overflow-hidden border border-black/10">
-                    <div className="h-6 sm:h-7 bg-[#ff9933]" />
-                    <div className="h-6 sm:h-7 bg-white flex items-center justify-center relative">
-                      <div className="w-5 h-5 rounded-full border-2 border-[#000080] flex items-center justify-center chakra-spin">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#000080]" />
-                      </div>
-                    </div>
-                    <div className="h-6 sm:h-7 bg-[#138808]" />
+                  /* Unfurled magnificent 3D waving Tiranga silk flag */
+                  <div className="relative origin-left">
+                    <RealisticFlag width={190} height={126} withShadow={true} />
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Pedestal Base */}
-            <div className="w-24 h-4 bg-gradient-to-r from-amber-700 via-amber-500 to-amber-800 rounded-t-lg shadow-lg border-t border-amber-300" />
-            <div className="w-32 h-3 bg-gradient-to-r from-slate-700 via-slate-600 to-slate-800 rounded-t-sm" />
+            {/* Realistic Marble & Brass Pedestal Base */}
+            <div className="w-24 h-4 bg-gradient-to-r from-amber-700 via-amber-400 to-amber-800 rounded-t-lg shadow-lg border-t border-amber-300 relative z-10" />
+            <div className="w-36 h-3 bg-gradient-to-r from-slate-200 via-white to-slate-300 dark:from-slate-700 dark:via-slate-500 dark:to-slate-800 rounded-t-sm shadow-md border-t border-white/60" />
+            <div className="w-44 h-3 bg-gradient-to-r from-slate-300 via-slate-100 to-slate-400 dark:from-slate-800 dark:via-slate-600 dark:to-slate-900 rounded-t-sm shadow-inner" />
           </div>
         </div>
 

@@ -104,6 +104,16 @@
       <p>Interactive <b>Cursor Spotlight</b>, <b>3D CardTilt</b> with specular sheen, <b>Magnetic Buttons</b> with spring physics, <b>Rolling Odometer Digits</b>, and rotating <b>Aurora Glow Borders</b>.</p>
     </td>
   </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🎨 Hyper-Realistic Visual Materials</h3>
+      <p>Tactile <b>Khadi & linen paper grain</b>, authentic <b>satin silk ribbon weave</b>, <b>embossed gold-leaf foil stamping</b>, and 3D pressed <b>wax commemorative seal stamps</b>.</p>
+    </td>
+    <td width="50%" valign="top">
+      <h3>☸️ 3D Sculpted Medallion & Silk Physics</h3>
+      <p>Dual-tone chiseled 24-facet <b>Ashoka Chakra medallion</b>, true-to-life <b>waving silk Tiranga</b> with traveling light ripples, and aerodynamic petal flutter physics.</p>
+    </td>
+  </tr>
 </table>
 
 ---

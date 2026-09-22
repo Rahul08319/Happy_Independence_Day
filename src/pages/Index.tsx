@@ -53,10 +53,12 @@ import { CardTilt } from "@/components/CardTilt";
 import { SegmentedControl, SegmentedOption } from "@/components/SegmentedControl";
 import { sounds } from "@/lib/soundEffects";
 import { CursorSpotlight } from "@/components/CursorSpotlight";
-import { FlowerShower, triggerFlowerShower } from "@/components/FlowerShower";
+import { RealisticPetalCanvas, triggerFlowerShower } from "@/components/RealisticPetalCanvas";
 import { FlagHoistModal } from "@/components/FlagHoistModal";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { MagneticButton } from "@/components/MagneticButton";
+import { RealisticFlag } from "@/components/RealisticFlag";
+import { RealisticChakra } from "@/components/RealisticChakra";
 
 const DEFAULT_MESSAGE =
   "Independence Day is an occasion to celebrate freedom, and to remember the sacrifices of those who fought to give us this sacred gift. Wishing you and your loved ones a proud, joyful, and prosperous Independence Day!";
@@ -92,89 +94,10 @@ const useScrollReveal = () => {
   }, []);
 };
 
-/* ─── High-detail Ornamental Ashoka Chakra with Interactive Ripple Waves ─── */
-const AshokaChakra = ({
-  size = 84,
-  className = "",
-  hero = false,
-  interactive = false,
-}: {
-  size?: number;
-  className?: string;
-  hero?: boolean;
-  interactive?: boolean;
-}) => {
-  const [ripples, setRipples] = useState<number[]>([]);
-  const [fastSpin, setFastSpin] = useState(false);
-
-  const handleClick = () => {
-    if (!interactive) return;
-    sounds.playChakraPulse();
-    setFastSpin(true);
-    const id = Date.now();
-    setRipples((prev) => [...prev, id]);
-    setTimeout(() => {
-      setRipples((prev) => prev.filter((r) => r !== id));
-    }, 1600);
-    setTimeout(() => setFastSpin(false), 2800);
-  };
-
-  return (
-    <div
-      onClick={handleClick}
-      role={interactive ? "button" : undefined}
-      tabIndex={interactive ? 0 : undefined}
-      onKeyDown={(e) => {
-        if (interactive && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          handleClick();
-        }
-      }}
-      className={`relative inline-flex items-center justify-center select-none ${
-        interactive ? "cursor-pointer group" : ""
-      } ${className}`}
-      style={{ width: size, height: size }}
-    >
-      {/* Concentric acoustic ripples radiating outward on tap */}
-      {ripples.map((id) => (
-        <span key={id} className="chakra-ripple-ring" />
-      ))}
-      <svg
-        viewBox="0 0 100 100"
-        width={size}
-        height={size}
-        style={{
-          animationDuration: fastSpin ? "3.5s" : hero ? "30s" : "20s",
-          transition: "animation-duration 0.4s ease",
-        }}
-        className={`${hero ? "chakra-spin-hero" : "chakra-spin"} transition-transform group-hover:scale-105`}
-        aria-label="Ashoka Chakra"
-      >
-        <circle cx="50" cy="50" r="47" fill="none" stroke="#000080" strokeWidth="2.5" />
-        <circle cx="50" cy="50" r="43" fill="none" stroke="#000080" strokeWidth="1" strokeDasharray="1.5 2" />
-        <circle cx="50" cy="50" r="8.5" fill="#000080" />
-        <circle cx="50" cy="50" r="4" fill="#ffffff" />
-        {Array.from({ length: 24 }).map((_, i) => (
-          <g key={i} transform={`rotate(${i * 15} 50 50)`}>
-            <line x1="50" y1="50" x2="50" y2="7" stroke="#000080" strokeWidth="1.6" strokeLinecap="round" />
-            <circle cx="50" cy="7" r="1.2" fill="#000080" />
-          </g>
-        ))}
-      </svg>
-    </div>
-  );
-};
-
-/* ─── Elegant Tricolor Ribbon Badge ─── */
+/* ─── Elegant Realistic Tricolor Ribbon Badge ─── */
 const TricolorBadge = () => (
-  <div className="flag-wave inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-border shadow-md select-none">
-    <div className="flex flex-col w-5 h-3.5 rounded-sm overflow-hidden shadow-inner border border-black/10">
-      <div className="h-1/3 bg-[#ff9933]" />
-      <div className="h-1/3 bg-white flex items-center justify-center">
-        <div className="w-1 h-1 rounded-full bg-[#000080]" />
-      </div>
-      <div className="h-1/3 bg-[#138808]" />
-    </div>
+  <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-border shadow-md select-none group hover:shadow-elegant transition-all">
+    <RealisticFlag width={26} height={17} waving={true} withShadow={false} />
     <span className="text-xs font-bold tracking-wider uppercase text-foreground">Jai Hind 🇮🇳</span>
   </div>
 );
@@ -246,8 +169,8 @@ const CardCanvas = ({
       style={{ aspectRatio: aspect }}
       className={`w-full rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-300 relative select-none print:shadow-none print:border-none ${themeConfig.cardBg} ${themeConfig.borderClass}`}
     >
-      {/* Top Tricolor Ribbon */}
-      <div className="shrink-0">
+      {/* Top Tricolor Ribbon with Satin Silk Weave */}
+      <div className="shrink-0 satin-ribbon">
         <div className="h-3.5 bg-[#ff9933]" />
         <div className="h-3 bg-white flex items-center justify-center">
           <div className="h-2 w-2 rounded-full border border-[#000080]" />
@@ -255,20 +178,20 @@ const CardCanvas = ({
         <div className="h-3.5 bg-[#138808]" />
       </div>
 
-      {/* Card Body */}
-      <div className="relative flex-1 p-5 sm:p-8 md:p-10 text-center flex flex-col items-center justify-center min-h-0 overflow-hidden">
+      {/* Card Body with Fine Paper Grain Texture */}
+      <div className="relative flex-1 p-5 sm:p-8 md:p-10 text-center flex flex-col items-center justify-center min-h-0 overflow-hidden paper-grain">
         {/* Watermark Chakra with gentle slow spin */}
         <div
           aria-hidden
           className="absolute inset-0 flex items-center justify-center opacity-[0.035] dark:opacity-[0.055] pointer-events-none"
         >
-          <AshokaChakra size={340} />
+          <RealisticChakra size={340} interactive={false} />
         </div>
 
         {/* Header */}
         <div className="relative mb-2 sm:mb-4">
           <div className="flex justify-center mb-1.5 float-slow">
-            <AshokaChakra size={posterSize === "square" ? 56 : 70} />
+            <RealisticChakra size={posterSize === "square" ? 56 : 70} interactive={false} />
           </div>
           <span
             className={`inline-block px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] border ${themeConfig.badgeBg}`}
@@ -279,7 +202,9 @@ const CardCanvas = ({
 
         {/* Sender Name */}
         <h2
-          className={`${fontConfig.fontClass} italic text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight px-2 ${themeConfig.textColor}`}
+          className={`${fontConfig.fontClass} italic text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight px-2 ${
+            theme === "royal" ? "gold-emboss" : themeConfig.textColor
+          }`}
         >
           {name || "Your Name Here"}
         </h2>
@@ -298,9 +223,9 @@ const CardCanvas = ({
           {message || DEFAULT_MESSAGE}
         </p>
 
-        {/* Commemorative Seal */}
+        {/* Commemorative Seal - 3D Wax & Gold Stamped */}
         {seal !== "none" && (
-          <div className="mt-3.5 sm:mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 dark:bg-amber-400/15 border border-amber-500/40 text-amber-800 dark:text-amber-200 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest shadow-sm float-slow">
+          <div className="mt-3.5 sm:mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full seal-stamp-realistic text-amber-950 font-extrabold text-[10px] sm:text-xs uppercase tracking-widest shadow-md float-slow">
             <span>{sealConfig.icon}</span>
             <span>{sealConfig.label}</span>
           </div>
@@ -333,8 +258,8 @@ const CardCanvas = ({
         </div>
       </div>
 
-      {/* Bottom Tricolor Ribbon */}
-      <div className="shrink-0">
+      {/* Bottom Tricolor Ribbon with Satin Silk Weave */}
+      <div className="shrink-0 satin-ribbon">
         <div className="h-3.5 bg-[#138808]" />
         <div className="h-3 bg-white" />
         <div className="h-3.5 bg-[#ff9933]" />
@@ -559,8 +484,8 @@ const Index = () => {
       {/* Interactive Cursor Spotlight (Apple-style torch) */}
       <CursorSpotlight />
 
-      {/* Floating Petal Shower (Pushpa Vrishti) */}
-      <FlowerShower />
+      {/* Floating Petal Shower with Realistic Aerodynamics (Pushpa Vrishti) */}
+      <RealisticPetalCanvas />
 
       {/* Floating Canvas Ambient Particles */}
       <ParticleCanvas />
@@ -593,7 +518,7 @@ const Index = () => {
         edition={countdown.editionString}
       />
 
-      {/* Decorative desktop badges */}
+      {/* Decorative desktop badges with waving silk Tiranga */}
       <div aria-hidden className="pointer-events-none absolute left-8 top-28 hidden lg:block opacity-85 print:hidden">
         <TricolorBadge />
       </div>
@@ -608,7 +533,7 @@ const Index = () => {
       <div className="relative container mx-auto px-4 py-10 md:py-16 max-w-6xl z-10">
         {/* ══ HERO SECTION ══ */}
         <header className="text-center print:hidden">
-          {/* Ashoka Chakra with interactive acoustic ripple shockwaves */}
+          {/* Hyper-realistic 3D Ashoka Chakra with acoustic ripples */}
           <div className="flex justify-center mb-6 hero-reveal" style={{ animationDelay: "0ms" }}>
             <div
               className="relative group cursor-pointer btn-spring"
@@ -618,9 +543,7 @@ const Index = () => {
               }}
               title="Click for Grand Celebratory Fireworks & Acoustic Harmonic Chime!"
             >
-              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-saffron/30 via-transparent to-india-green/25 blur-2xl scale-125 animate-pulse" />
-              <div className="absolute inset-0 rounded-full bg-blue-600/20 blur-xl animate-pulse" />
-              <AshokaChakra size={96} hero interactive />
+              <RealisticChakra size={104} hero interactive />
             </div>
           </div>
 

@@ -647,6 +647,54 @@
     0%, 100% { transform: translateY(0); }
     50%       { transform: translateY(-7px); }
   }
+
+  /* ─── Realistic Silk Wave Light Ripple ─── */
+  @keyframes silkRipple {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+  }
+
+  /* ─── Embossed Gold Leaf Foil Stamping ─── */
+  .gold-emboss {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef08a 25%, #f59e0b 50%, #d97706 75%, #78350f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.3));
+  }
+
+  /* ─── 3D Stamped Commemorative Wax & Gold Seal ─── */
+  .seal-stamp-realistic {
+    background: radial-gradient(circle at 35% 30%, #fef08a 0%, #f59e0b 40%, #b45309 75%, #78350f 100%);
+    box-shadow:
+      0 4px 14px -2px rgba(180, 83, 9, 0.45),
+      inset 0 1.5px 2px rgba(255, 255, 255, 0.8),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(254, 240, 138, 0.75);
+  }
+
+  /* ─── Satin Silk Ribbon Texture with Top & Bottom Highlight ─── */
+  .satin-ribbon {
+    position: relative;
+    box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+  .satin-ribbon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, transparent 40%, rgba(0, 0, 0, 0.12) 100%);
+    pointer-events: none;
+  }
+
+  /* ─── Khadi & Linen Paper Grain Texture ─── */
+  .paper-grain {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
+  .dark .paper-grain {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
 }
 
 /* ─── Print Optimizations ─── */
