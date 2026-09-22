@@ -12,13 +12,13 @@
   <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-5.4-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5" /></a>
   <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-orange.svg?style=for-the-badge" alt="MIT License" /></a>
-  <a href="https://github.com/Rahul08319/code-lookalike/pulls"><img src="https://img.shields.io/badge/PRs-Welcome-138808.svg?style=for-the-badge" alt="PRs Welcome" /></a>
+  <a href="https://github.com/Rahul08319/Happy_Independence_Day/pulls"><img src="https://img.shields.io/badge/PRs-Welcome-138808.svg?style=for-the-badge" alt="PRs Welcome" /></a>
 </p>
 
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Rahul08319/code-lookalike/main/public/og-image.jpg" alt="Happy Independence Day Banner" width="820" style="border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(255, 103, 31, 0.25);" />
+  <img src="https://raw.githubusercontent.com/Rahul08319/Happy_Independence_Day/main/public/og-image.jpg" alt="Happy Independence Day Banner" width="820" style="border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(255, 103, 31, 0.25);" />
 </p>
 
 <p align="center">
@@ -166,11 +166,10 @@ Follow these steps to run the studio locally on your computer:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Rahul08319/happy-independence-day.git
-# (or if using the original repo url: git clone https://github.com/Rahul08319/code-lookalike.git)
+git clone https://github.com/Rahul08319/Happy_Independence_Day.git
 
 # 2. Enter directory
-cd happy-independence-day
+cd Happy_Independence_Day
 
 # 3. Install dependencies
 npm install
@@ -299,7 +298,7 @@ export const CARD_THEMES: Record<CardTheme, CardThemeConfig> = {
 
 Contributions, feature suggestions, and pull requests are warmly welcomed!
 
-1. Fork the Project (`https://github.com/Rahul08319/code-lookalike/fork`)
+1. Fork the Project (`https://github.com/Rahul08319/Happy_Independence_Day/fork`)
 2. Create your Feature Branch (`git checkout -b feature/NewFeature`)
 3. Commit your Changes (`git commit -m 'Add NewFeature'`)
 4. Push to the Branch (`git push origin feature/NewFeature`)
