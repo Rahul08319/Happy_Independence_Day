@@ -216,3 +216,88 @@ export const removeRecentWish = (id: string): RecentWish[] => {
   }
   return next;
 };
+
+/**
+ * Returns ordinal representation of a number:
+ * e.g. 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th", 21 -> "21st", 79 -> "79th", 81 -> "81st", 100 -> "100th"
+ */
+export const getOrdinal = (n: number): string => {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
+export interface IndependenceDayInfo {
+  targetYear: number;
+  edition: number;
+  editionString: string;
+  isToday: boolean;
+  targetDate: number;
+  daysRemaining: number;
+  specialMilestone?: string;
+}
+
+/**
+ * Automatically computes upcoming Independence Day for any coming year (2026, 2027, 2028, 2047, etc.):
+ * - Target is August 15th at 00:00:00 IST (+05:30).
+ * - During August 15th IST itself: `isToday = true` (Celebration mode).
+ * - After August 15th 23:59:59 IST has concluded: automatically rolls over to the next year.
+ * - Supports year override parameter for simulation or testing.
+ */
+export const getIndependenceDayInfo = (
+  referenceNow = Date.now(),
+  yearOverride?: number | null
+): IndependenceDayInfo => {
+  const now = referenceNow;
+
+  // IST is UTC+05:30
+  const istOffset = 5.5 * 60 * 60 * 1000;
+  const istNow = new Date(now + istOffset);
+  const istCurrentYear = istNow.getUTCFullYear();
+
+  let targetYear = yearOverride ?? istCurrentYear;
+
+  // Aug 15 00:00:00 IST of current IST year (month is 7 = August)
+  const thisAug15 = Date.UTC(istCurrentYear, 7, 15, 0, 0, 0) - istOffset;
+  const nextDayAug16 = thisAug15 + 24 * 60 * 60 * 1000;
+
+  if (!yearOverride) {
+    if (now >= nextDayAug16) {
+      // August 15th has already concluded this year -> auto roll over to next year
+      targetYear = istCurrentYear + 1;
+    } else {
+      targetYear = istCurrentYear;
+    }
+  }
+
+  const targetDate = Date.UTC(targetYear, 7, 15, 0, 0, 0) - istOffset;
+  const targetAug16 = targetDate + 24 * 60 * 60 * 1000;
+  const isToday = now >= targetDate && now < targetAug16;
+
+  // 1947 = 1st Independence Day (August 15, 1947)
+  const edition = targetYear - 1947;
+  const editionString = getOrdinal(edition);
+
+  let specialMilestone: string | undefined;
+  if (edition === 75) {
+    specialMilestone = "Azadi Ka Amrit Mahotsav (75th)";
+  } else if (edition === 100) {
+    specialMilestone = "Centenary of Freedom (100th · Viksit Bharat 2047)";
+  } else if (edition % 10 === 0) {
+    specialMilestone = `${editionString} Decade Milestone`;
+  }
+
+  const distance = Math.max(0, targetDate - now);
+  const daysRemaining = Math.floor(distance / 86400000);
+
+  return {
+    targetYear,
+    edition,
+    editionString,
+    isToday,
+    targetDate,
+    daysRemaining,
+    specialMilestone,
+  };
+};
+

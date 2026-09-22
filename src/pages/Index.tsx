@@ -35,6 +35,8 @@ import {
   CARD_FONTS,
   CardFont,
   PATRIOTIC_QUOTES,
+  getIndependenceDayInfo,
+  getOrdinal,
   sanitizeName,
   sanitizeWish,
   loadRecentWishes,
@@ -48,30 +50,22 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { ParticleCanvas } from "@/components/ParticleCanvas";
 import { NationalSymbols } from "@/components/NationalSymbols";
 
-// Automatically target the upcoming Independence Day (15 Aug, IST).
-const getUpcomingYear = () => {
-  const now = Date.now();
-  const thisYear = new Date().getFullYear();
-  const aug15 = new Date(`${thisYear}-08-15T00:00:00+05:30`).getTime();
-  return now > aug15 + 86400000 ? thisYear + 1 : thisYear;
-};
-
-const TARGET_YEAR = getUpcomingYear();
-const EDITION = TARGET_YEAR - 1947; // 1947 = 1st Independence Day (79th in 2026)
-const TARGET_DATE = new Date(`${TARGET_YEAR}-08-15T00:00:00+05:30`).getTime();
-
 const DEFAULT_MESSAGE =
   "Independence Day is an occasion to celebrate freedom, and to remember the sacrifices of those who fought to give us this sacred gift. Wishing you and your loved ones a proud, joyful, and prosperous Independence Day!";
 
-const useCountdown = () => {
+const useCountdown = (yearOverride?: number | null) => {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  const distance = Math.max(0, TARGET_DATE - now);
+
+  const info = useMemo(() => getIndependenceDayInfo(now, yearOverride), [now, yearOverride]);
+  const distance = Math.max(0, info.targetDate - now);
+
   return {
-    days: Math.floor(distance / 86400000),
+    ...info,
+    days: info.daysRemaining,
     hours: Math.floor((distance % 86400000) / 3600000),
     minutes: Math.floor((distance % 3600000) / 60000),
     seconds: Math.floor((distance % 60000) / 1000),
@@ -177,6 +171,8 @@ interface CardCanvasProps {
   font: CardFont;
   posterSize: PosterSize;
   shareUrl: string;
+  targetYear: number;
+  editionString: string;
 }
 
 const CardCanvas = ({
@@ -188,6 +184,8 @@ const CardCanvas = ({
   font,
   posterSize,
   shareUrl,
+  targetYear,
+  editionString,
 }: CardCanvasProps) => {
   const themeConfig = CARD_THEMES[theme] || CARD_THEMES.royal;
   const sealConfig = CARD_SEALS[seal] || CARD_SEALS["proud-indian"];
@@ -266,7 +264,7 @@ const CardCanvas = ({
             जय हिन्द · Jai Hind 🇮🇳
           </p>
           <p className="mt-0.5 text-[10px] sm:text-xs tracking-wider opacity-75 font-semibold">
-            {EDITION}th Independence Day · 15 August {TARGET_YEAR}
+            {editionString} Independence Day · 15 August {targetYear}
           </p>
         </div>
 
@@ -314,7 +312,16 @@ const Index = () => {
 
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
   const [recent, setRecent] = useState<RecentWish[]>([]);
-  const { days, hours, minutes, seconds } = useCountdown();
+
+  const [yearOverride, setYearOverride] = useState<number | null>(() => {
+    if (typeof window !== "undefined") {
+      const yr = new URLSearchParams(window.location.search).get("year");
+      if (yr && !isNaN(Number(yr))) return Number(yr);
+    }
+    return null;
+  });
+
+  const countdown = useCountdown(yearOverride);
   const cardRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<HTMLDivElement>(null);
 
@@ -326,6 +333,11 @@ const Index = () => {
     const th = params.get("th") as CardTheme | null;
     const sl = params.get("sl") as CardSeal | null;
     const fn = params.get("fn") as CardFont | null;
+    const yr = params.get("year");
+
+    if (yr && !isNaN(Number(yr))) {
+      setYearOverride(Number(yr));
+    }
 
     if (bl) {
       const n = sanitizeName(decodeURIComponent(bl.replace(/-/g, " ")));
@@ -412,14 +424,17 @@ const Index = () => {
       sl: active.seal,
       fn: active.font,
     });
+    if (yearOverride) {
+      params.set("year", String(yearOverride));
+    }
     return `${base}?${params.toString()}`;
-  }, [submitted, name, message, theme, seal, font]);
+  }, [submitted, name, message, theme, seal, font, yearOverride]);
 
   const shareText = useMemo(() => {
     const sender = submitted?.name || name || "A proud citizen";
     const currentMsg = submitted?.message || message;
-    return `🇮🇳 *${sender}* has sent you a special Independence Day ${TARGET_YEAR} greeting card!\n\n"${currentMsg}"\n\n👉 Open your personalised card: ${shareUrl}\n\n*Jai Hind!*`;
-  }, [submitted, name, message, shareUrl]);
+    return `🇮🇳 *${sender}* has sent you a special Independence Day ${countdown.targetYear} greeting card!\n\n"${currentMsg}"\n\n👉 Open your personalised card: ${shareUrl}\n\n*Jai Hind!*`;
+  }, [submitted, name, message, shareUrl, countdown.targetYear]);
 
   const handleWhatsApp = () => {
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
@@ -429,7 +444,7 @@ const Index = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Happy Independence Day ${TARGET_YEAR} from ${submitted?.name || name}`,
+          title: `Happy Independence Day ${countdown.targetYear} from ${submitted?.name || name}`,
           text: `🇮🇳 ${submitted?.name || name} has sent you a special Independence Day wish!`,
           url: shareUrl,
         });
@@ -465,7 +480,7 @@ const Index = () => {
       });
       const link = document.createElement("a");
       const safeName = (submitted?.name || name || "wish").replace(/\s+/g, "-").toLowerCase();
-      link.download = `independence-day-${TARGET_YEAR}-${posterSize}-${safeName}.png`;
+      link.download = `independence-day-${countdown.targetYear}-${posterSize}-${safeName}.png`;
       link.href = dataUrl;
       link.click();
       toast.success(`Downloaded ${cfg.label}!`, { id: "dl" });
@@ -529,7 +544,16 @@ const Index = () => {
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-saffron/10 dark:bg-saffron/20 border border-saffron/30 text-saffron font-bold text-xs md:text-sm uppercase tracking-[0.25em] shadow-sm mb-4">
             <span className="w-2 h-2 rounded-full bg-saffron animate-ping inline-block" />
-            15 August {TARGET_YEAR} · {EDITION}th Independence Day
+            {countdown.isToday ? (
+              <span>🎉 Celebrating Today · {countdown.editionString} Independence Day!</span>
+            ) : (
+              <span>15 August {countdown.targetYear} · {countdown.editionString} Independence Day</span>
+            )}
+            {countdown.specialMilestone && (
+              <span className="hidden sm:inline-block border-l border-saffron/40 pl-2 text-amber-600 dark:text-amber-300 font-extrabold">
+                {countdown.specialMilestone}
+              </span>
+            )}
           </div>
 
           <h1 className="font-heading text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.08] text-gradient-tricolor">
@@ -560,15 +584,27 @@ const Index = () => {
         <section className="mt-10 md:mt-14 fade-up print:hidden" style={{ animationDelay: "0.15s" }}>
           <div className="text-center mb-4">
             <span className="text-xs uppercase tracking-[0.3em] font-bold text-muted-foreground/90">
-              Countdown to Grand 15 August Celebration
+              {countdown.isToday ? "Festival of Freedom" : `Countdown to 15 August ${countdown.targetYear}`}
             </span>
           </div>
-          <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-5">
-            <StatCard value={days} label="Days" />
-            <StatCard value={hours} label="Hours" />
-            <StatCard value={minutes} label="Mins" />
-            <StatCard value={seconds} label="Secs" />
-          </div>
+          {countdown.isToday ? (
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-saffron/15 via-white/20 to-india-green/15 border border-saffron/30 text-center max-w-lg mx-auto shadow-elegant">
+              <span className="text-3xl sm:text-4xl">🇮🇳 🎆 🇮🇳</span>
+              <h3 className="text-xl sm:text-2xl font-extrabold font-heading mt-2 text-foreground">
+                Happy {countdown.editionString} Independence Day!
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                Today we celebrate India's freedom. Personalize and send greeting cards to your loved ones!
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-5">
+              <StatCard value={countdown.days} label="Days" />
+              <StatCard value={countdown.hours} label="Hours" />
+              <StatCard value={countdown.minutes} label="Mins" />
+              <StatCard value={countdown.seconds} label="Secs" />
+            </div>
+          )}
         </section>
 
         {/* INTERACTIVE STUDIO SECTION */}
@@ -813,6 +849,8 @@ const Index = () => {
                       font={font}
                       posterSize={posterSize}
                       shareUrl={shareUrl}
+                      targetYear={countdown.targetYear}
+                      editionString={countdown.editionString}
                     />
                   </div>
 
@@ -876,6 +914,8 @@ const Index = () => {
                   font={submitted.font}
                   posterSize={posterSize}
                   shareUrl={shareUrl}
+                  targetYear={countdown.targetYear}
+                  editionString={countdown.editionString}
                 />
               </div>
 
@@ -962,7 +1002,7 @@ const Index = () => {
             <TricolorBadge />
           </div>
           <p className="font-semibold text-foreground">
-            Dedicated to the Republic of India & all freedom fighters · 15 August {TARGET_YEAR}
+            Dedicated to the Republic of India & all freedom fighters · 15 August {countdown.targetYear}
           </p>
           <p className="text-xs text-muted-foreground/70 mt-1">
             Made with ❤️, Heritage & National Pride · Vande Mataram

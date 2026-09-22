@@ -84,6 +84,16 @@
       <p>Seamlessly toggle between daylight elegance and deep sapphire dark mode with persistent browser storage.</p>
     </td>
   </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🔄 Perpetual Multi-Year Engine</h3>
+      <p>Automatically calculates future Independence Day years, dates, and grammatical ordinals (<b>79th</b> in 2026, <b>80th</b> in 2027, <b>81st</b> in 2028, <b>100th Centenary</b> in 2047) with midnight IST rollover.</p>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🏛️ Sacred Emblems of Our Nation</h3>
+      <p>Interactive cultural accordion detailing the profound history, symbolism, and virtues of the <b>Tiranga</b>, <b>Ashoka Chakra</b>, <b>Lion Capital</b>, and national anthems.</p>
+    </td>
+  </tr>
 </table>
 
 ---
