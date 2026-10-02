@@ -59,6 +59,7 @@ import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { MagneticButton } from "@/components/MagneticButton";
 import { RealisticFlag } from "@/components/RealisticFlag";
 import { RealisticChakra } from "@/components/RealisticChakra";
+import { DynamicIsland } from "@/components/DynamicIsland";
 
 const DEFAULT_MESSAGE =
   "Independence Day is an occasion to celebrate freedom, and to remember the sacrifices of those who fought to give us this sacred gift. Wishing you and your loved ones a proud, joyful, and prosperous Independence Day!";
@@ -481,6 +482,13 @@ const Index = () => {
   /* ─── Render ─── */
   return (
     <main className="relative min-h-screen overflow-hidden bg-background">
+      {/* Apple Dynamic Island Floating Action Pill */}
+      <DynamicIsland
+        onOpenFlagModal={() => setIsFlagModalOpen(true)}
+        year={countdown.targetYear}
+        edition={countdown.editionString}
+      />
+
       {/* Interactive Cursor Spotlight (Apple-style torch) */}
       <CursorSpotlight />
 
